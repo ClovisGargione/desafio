@@ -1,0 +1,105 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li ng-repeat="menu in vm.bradcrumb" class="breadcrumb-item" ng-class="{'active': !menu.link}">
+        <a href="{{menu.link}}" ng-show="menu.link">{{menu.nome}}</a>
+        <span ng-show="!menu.link">{{menu.nome}}</span>
+    </li>
+  </ol>
+</nav>
+<hr>
+<div class="row col-md-12">
+    <div class="col-md-6 col-sm-12 float-button">
+        <a href="#!/itens/novo">
+            <button type="button" data-toggle="tooltip" data-placement="top" title="Novo item" class="btn btn-primary shadow" ng-class="{'float-button-circle':vm.escondeLabelBotao, 'mb-3':!vm.escondeLabelBotao }">
+            <i class="fa fa-cube" ng-class="{'fa-2x':vm.escondeLabelBotao}"></i><span ng-show="!vm.escondeLabelBotao"> Novo item</span>
+            </button>
+        </a>
+    </div> 
+    <div class="col-md-6 col-sm-12 pull-right">
+        <div class="form-label-group sombra-componente">
+            <input type="text" ng-model="filter"
+                   class="form-control" id="inputFiltro"
+                   name="inputFiltro" aria-describedby="itemHelp"
+                   placeholder="Informe o item"
+                   required>
+            <label for="inputFiltro"><i class="fa fa-search"></i> Buscar</label>
+        </div>
+    </div>
+</div>
+<br>
+<div class="card shadow">
+	<h3 class="card-header">
+		<i class="fa fa-cubes"></i> Itens
+	</h3>
+	<div class="card-block padding-card">
+		<h4 class="card-title">Itens cadastrados</h4>
+		<div class="list-group">
+      <span class="list-group-item list-group-item-action flex-column align-items-start" dir-paginate="item in vm.itens | orderBy:'nome' | itemsPerPage: 10 | limitTo:10 | filter:filter as filtered">
+        <div class="d-flex w-100 justify-content-between">
+          <h2 class="mb-1">{{item.nome}} </h2>
+         <span style="display: inline-grid"> 
+              <small>Data de fabricação {{vm.formataData(item.dataDeFabricacao)}}</small>
+             <small ng-show="item.dataDeValidade"><span ng-class="{'green': vm.validarData(vm.dataAtual, item.dataDeValidade), 'red': !vm.validarData(vm.dataAtual, item.dataDeValidade)}">Data de validade {{vm.formataData(item.dataDeValidade)}}</span></small>
+              <small>
+              <div class="custom-control custom-checkbox custom-control-inline">
+                  <input type="checkbox"class="custom-control-input" ng-disabled=true ng-checked="item.perecivel" ng-model="item.perecivel" id="{{$index}}">
+                  <label class="custom-control-label" for="{{$index}}">Perecível</label>
+              </div>
+              </small>
+           </span>  
+        </div>
+        <h6 class="mb-1">Preço: {{ item.preco | currency}}</h6>
+        <h6 class="mb-1">Quantidade: {{vm.formataQuantidade(item.unidadeDeMedida, item.quantidade)}}</h6>  
+        <h5 class="inline">
+            <span class="badge badge-warning">{{vm.getNomePorChaveUnidadeDeMedida(item.unidadeDeMedida)}}</span>
+            <span class="badge badge-danger" ng-show="!vm.validarData(vm.dataAtual, item.dataDeValidade)">Produto vencido</span>
+          </h5>
+        <span class="pull-right">
+        <i class="fa fa-trash fa-2x text-danger pointer" ng-click="vm.confirmarRemover(item)" data-toggle="tooltip" data-placement="top"
+                        title="Remover item {{item.nome}}"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a
+                        href="#!/itens/editar/{{item.id}}"><i
+                            class="fa fa-pencil-square-o fa-2x text-info pointer"
+                            data-toggle="tooltip" data-placement="top"
+                                                                                   title="Editar item {{item.nome}}"></i></a>
+        </span>
+      </span>
+        <span ng-show="filtered.length == 0">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <i class="fa fa-inbox icon-empty-size" aria-hidden="true"></i>
+                    <div><label>Nenhum resultado encontrado <i class="fa fa-frown-o" aria-hidden="true"></i></label></div>
+                    <div ng-show="!filter"><label>Que tal iniciar o cadastro de itens?</label></div>
+                    <a ng-show="!filter" href="#!/itens/novo">
+                        <button type="button" class="btn btn-primary btn-sm">
+                            <i class="fa fa-cube"></i>
+                            <span> Novo item</span>
+                        </button>
+                    </a>
+                </div>    
+            </div>
+        </span>
+	   </div>
+        <div class="pt-3 pull-right">
+            <dir-pagination-controls template-url="../../assets/libs/angularUtils-pagination/dirPagination.tpl.html"></dir-pagination-controls>
+        </div>    
+    </div>
+<div class="modal fade" id="modalConfirmacao" tabindex="-1" role="dialog"
+	aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Aviso!</h5>
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">Deseja excluir o item
+				{{vm.modal.nome}} ?</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Não</button>
+				<button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.remover(vm.modal)">Sim</button>
+			</div>
+		</div>
+	</div>
+</div>

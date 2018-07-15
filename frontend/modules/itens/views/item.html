@@ -1,0 +1,145 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li ng-repeat="menu in vm.bradcrumb" class="breadcrumb-item" ng-class="{'active': !menu.link}">
+        <a href="{{menu.link}}" ng-show="menu.link">{{menu.nome}}</a>
+        <span ng-show="!menu.link">{{menu.nome}}</span>
+    </li>
+  </ol>
+</nav>
+<hr>
+<div class="alert alert-success" role="alert" ng-show="vm.sucesso" ng-bind-html="vm.mensagemDeSucesso"></div>
+<div class="alert alert-danger" role="alert" ng-show="vm.mensagemDeErro.length > 0" ng-bind-html="vm.mensagemDeErro"></div>
+<div class="card shadow">
+    <h3 class="card-header">
+		<i class="fa fa-cube"></i> Item
+	</h3>
+    <div class="card-block padding-card">
+        <h4 class="card-title">Novo item</h4>
+        <form id="itemForm" name="itemForm" role="form" novalidate>
+            <fieldset ng-disabled="vm.sucesso">
+                <div class="form-row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="inputNomeItem">Nome <span class="red">*</span></label>
+                                <input type="text" ng-model="vm.item.nome"
+                                    class="form-control" id="inputNomeItem"
+                                    name="inputNomeItem" aria-describedby="usuarioHelp"
+                                    placeholder="Informe o nome do item"
+                                    ng-class="{'is-invalid': itemForm.inputNomeItem.$dirty && itemForm.inputNomeItem.$invalid}"
+                                    required>
+                            
+                                <div class="invalid-feedback">Nome do item é obrigatório.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="status">Unidade de medida <span class="red">*</span></label><br>
+                            <div class="input-group pt-1">
+                                <div class="custom-control custom-radio custom-control-inline col-md-4 col-sm-4 mr-0 pl-2">
+                                    <input class="custom-control-input" ng-model="vm.item.unidadeDeMedida" type="radio"
+                                        id="inlineCheckbox1" ng-change="vm.defineDecimal(vm.item.unidadeDeMedida)" value="lt" required>&nbsp;&nbsp;&nbsp;&nbsp;<label
+                                        class="custom-control-label" for="inlineCheckbox1">Litro</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline col-md-4 col-sm-4 mr-0 pl-2">
+                                    <input class="custom-control-input" ng-model="vm.item.unidadeDeMedida" type="radio"
+                                        id="inlineCheckbox2" ng-change="vm.defineDecimal(vm.item.unidadeDeMedida)" value="kg" required>&nbsp;&nbsp;&nbsp;&nbsp;<label
+                                        class="custom-control-label" for="inlineCheckbox2">Quilograma</label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline col-md-4 col-sm-4 mr-0 pl-2">
+                                    <input class="custom-control-input" ng-model="vm.item.unidadeDeMedida" type="radio"
+                                        id="inlineCheckbox3" ng-change="vm.defineDecimal(vm.item.unidadeDeMedida)" value="un" required>&nbsp;&nbsp;&nbsp;&nbsp;<label
+                                        class="custom-control-label" for="inlineCheckbox3">Unidade</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="inputQuantidade">Quantidade </label>
+                            <div class="input-group">
+                                <input type="text" ng-model="vm.item.quantidade"
+                                    model-view-value="true"
+                                    ui-number-mask="vm.defineDecimal(vm.item.unidadeDeMedida)"
+                                    class="form-control" id="inputQuantidade"
+                                    name="inputQuantidade" aria-describedby="itemHelp"
+                                    placeholder="Informe a quantidade"
+                                    ng-class="{'is-invalid': itemForm.inputQuantidade.$dirty && itemForm.inputQuantidade.$invalid}">
+                                <div class="input-group-append" ng-show="vm.item.unidadeDeMedida">
+                                    <span class="input-group-text" id="basic-addon2">{{vm.item.unidadeDeMedida}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="inputQuantidade">Preço <span class="red">*</span></label>
+                            <div class="input-group">
+                                <input type="text" ng-model="vm.item.preco"
+                                    ui-money-mask
+                                    class="form-control" id="inputPreco"
+                                    name="inputPreco" aria-describedby="itemHelp"
+                                    placeholder="Informe o preço"
+                                    ng-class="{'is-invalid': itemForm.inputPreco.$dirty && itemForm.inputPreco.$invalid}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="inputPerecivel">Produto perecível <span class="red">*</span></label><br>
+                            <div class="custom-control custom-checkbox custom-control-inline col-md-6 col-sm-6 mr-0">
+                                <input type="checkbox"ng-model="vm.item.perecivel" class="custom-control-input" id="customCheck1">
+                                <label class="custom-control-label" for="customCheck1{{$index}}">Sim</label>
+                            </div>    
+                        </div>
+                    </div> 
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="inputLogin">Data de Fabricação <span class="red">*</span></label><br>
+                            <div class="input-group">
+                                <datepicker date-format="dd/MM/yyyy" datepicker-mobile="true"> <input
+                                    type="text" ng-model="vm.item.dataDeFabricacao"
+                                    ui-date-mask="DD/MM/YYYY"
+                                    class="form-control" id="inputItemDataFabricacao"
+                                    name="inputItemDataFabricacao" aria-describedby="itemHelp"
+                                    ng-change="vm.validarDataDeFabricacao(itemForm);"
+                                    placeholder="Informe a data de fabricação"
+                                    ng-class="{'is-invalid': itemForm.inputItemDataFabricacao.$dirty && itemForm.inputItemDataFabricacao.$invalid || itemForm.inputItemDataFabricacao.$dirty && !vm.validarData(vm.item.dataDeFabricacao, vm.item.dataDeValidade) || itemForm.inputItemDataFabricacao.$dirty && !vm.validarData(vm.item.dataDeFabricacao, vm.dataAtual)}"
+                                    required>
+                                    <div ng-show="itemForm.inputItemDataFabricacao.$dirty && itemForm.inputItemDataFabricacao.$invalid" class="invalid-feedback">Data de fabricação é obrigatório.</div>
+                                    <div ng-show="itemForm.inputItemDataFabricacao.$dirty && !vm.validarData(vm.item.dataDeFabricacao, vm.item.dataDeValidade)" class="invalid-feedback">Data de fabricação não pode ser superior à data de validade.</div>
+                                    <div ng-show="itemForm.inputItemDataFabricacao.$dirty && !vm.validarData(vm.item.dataDeFabricacao, vm.dataAtual)" class="invalid-feedback">Data de fabricação não pode ser superior à data atual.</div>
+                                </datepicker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="inputLogin">Data de validade <span ng-show="vm.item.perecivel" class="red">*</span></label><br>
+                            <div class="input-group">
+                                <datepicker date-format="dd/MM/yyyy" datepicker-mobile="true"> <input
+                                    ui-date-mask="DD/MM/YYYY"                                                                      
+                                    type="text" ng-model="vm.item.dataDeValidade"
+                                    class="form-control" id="inputItemDataValidade"
+                                    name="inputItemDataValidade" aria-describedby="itemHelp"
+                                    ng-change="vm.validarDataDeValidade(itemForm)"
+                                    placeholder="Informe a data de validade"
+                                    ng-class="{'is-invalid': itemForm.inputItemDataValidade.$dirty && itemForm.inputItemDataValidade.$invalid || itemForm.inputItemDataValidade.$dirty && !vm.validarData(vm.dataAtual, vm.item.dataDeValidade)}"
+                                    ng-required="vm.item.perecivel">
+                                    <div ng-show="itemForm.inputItemDataValidade.$dirty && itemForm.inputItemDataValidade.$invalid" class="invalid-feedback">Data de validade é obrigatório.</div>
+                                     <div ng-show="itemForm.inputItemDataValidade.$dirty && !vm.validarData(vm.dataAtual, vm.item.dataDeValidade)" class="invalid-feedback">Produto vencido.</div>
+                                </datepicker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <small id="emailHelp" class="form-text text-muted pb-2">(*) campos obrigatórios</small>
+                    </div>
+                </div>   
+            </fieldset>
+        </form>
+        <div class="card-footer bg-transparent text-right">
+			<button type="button" class="btn btn-link" ng-click="vm.voltar()"><i class="fa fa-reply" aria-hidden="true"></i>  Cancelar</button>
+			<button type="button" class="btn btn-primary" ng-click="vm.salvar()" ng-disabled="itemForm.$invalid || vm.sucesso || vm.validarDataDeFabricacao(itemForm) || vm.validarDataDeValidade(itemForm) "><i class="{{vm.icone}}" aria-hidden="true"></i>  Salvar</button>
+		</div>
+    </div>    
+</div>

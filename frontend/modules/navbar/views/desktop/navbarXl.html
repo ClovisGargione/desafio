@@ -1,0 +1,20 @@
+<nav class="navbar navbar-light default-color d-none d-lg-block fixed-top"
+	style="justify-content: flex-start; box-shadow: 10px 4px 4px #888888;">
+	<a class="navbar-brand" href="#!/itens/lista"><img src="assets/images/itens.svg" height="30" width="30"> Cadastro de itens</a>
+
+	<button class="navbar-toggler" type="button" data-toggle="offcanvas">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	 <div id="sidenav" style="float:right">
+	<ul class="navbar-nav ml-auto">
+	    <li class="nav-item dropdown">
+	        <a class="nav-link dropdown-toggle dropdown-menu-right" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	          Usuário
+	        </a>
+	        <div class="dropdown-menu large-dropdown" aria-labelledby="navbarDropdown">
+	          <a class="dropdown-item pointer" ng-click="vm.logout()"><i class="fa fa-sign-out"></i> Sair</a>
+	        </div>
+	    </li>
+    </ul>
+    </div>
+</nav>

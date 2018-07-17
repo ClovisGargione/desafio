@@ -1,0 +1,20 @@
+{
+  "name": "cadastro-de-itens",
+  "version": "1.0.0",
+  "description": "Desafio de cadastro de itens",
+  "scripts": {
+    "start": "http-server -c -1"
+  },
+  "keywords": [
+    "heroku"
+  ],
+  "author": "Clovis Gargione",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.9.8",
+    "http-server": "^0.11.1"
+  },
+  "engines": {
+    "node": "4.7.0"
+  }
+}

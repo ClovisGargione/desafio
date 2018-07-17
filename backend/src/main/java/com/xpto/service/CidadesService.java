@@ -17,6 +17,7 @@ import org.springframework.util.ResourceUtils;
 
 import com.opencsv.CSVReader;
 import com.xpto.dto.Cidade;
+import com.xpto.dto.CidadesMaisDistantes;
 import com.xpto.dto.Estados;
 import com.xpto.entity.Cidades;
 import com.xpto.repository.CidadesCustomRepository;
@@ -102,23 +103,6 @@ public class CidadesService {
 		}
 	}
 	
-	private List<Estados> buscarQuantidadeDeCidadePorEstado(List<Cidades> lista){
-		Map<String, List<Cidades>> map = mapEstados(lista);
-		List<Estados> listaEstados = quantidadeDeCidadeporEstado(map);
-		return listaEstados;
-	}
-	
-	private List<Estados> estadoMaiorMenorNumeroCidades(List<Cidades> lista) {
-		Estados estadosMaiorNumeroCidades = new Estados();
-		Estados estadosMenorNumeroCidades = new Estados();
-		Map<String, List<Cidades>> map = mapEstados(lista);
-		List<Estados> listaEstados = new ArrayList<>();
-		estadosMaiorNumeroCidades = maiorNumeroDeCidades(map);
-		estadosMenorNumeroCidades = menorNumeroDeCidades(map);
-		listaEstados.add(estadosMaiorNumeroCidades);
-		listaEstados.add(estadosMenorNumeroCidades);
-		return listaEstados;
-	}
 	
 	public Cidades buscarCidadePorIbgeId(Long ibgeId) throws Exception {
 		Cidades cidade = cidadesRepository.findByIbgeId(ibgeId);
@@ -146,6 +130,70 @@ public class CidadesService {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public List<String> dadosDaColunaPorString(String coluna, String caracteres) throws Exception{
+		try {
+				List<String> dados = cidadesCustomRepository.dadosDaColunaPorString(coluna, caracteres);							
+				return dados;
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new Exception("Não foi possível localizar os dados para coluna " + coluna);
+		}
+	}
+	
+	public Long quantidadeDeItensDistintosPorColuna(String coluna) throws Exception {
+		try {
+			Long quantidadeDeItens = cidadesCustomRepository.quantidadeDeItensDistintosPorColuna(coluna);
+			return quantidadeDeItens;
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new Exception("Não foi possível contar os dados para coluna " + coluna);
+		}
+	}
+	
+	public Long quantidadeTotalDeRegistros() throws Exception {
+		try {
+			Long resultado = cidadesCustomRepository.quantidadeTotalDeRegistros();
+			return resultado;
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new Exception("Não foi possível contar o total de registros");
+		}
+	}
+	
+	public CidadesMaisDistantes calculaCidadesMaisDistantes() {
+		CidadesMaisDistantes cidadesMaisDistantes = new CidadesMaisDistantes();
+		List<Cidades> listaCidades = cidadesRepository.findAll();
+		Double distancia = 0.0;
+		for(int index = 0; index < listaCidades.size(); index++) {
+			for(int i = 0; i < listaCidades.size(); i++) {
+				Double distanciaCalculada = CalculadoraDeDistancia.distancia(listaCidades.get(index).getLatitude(), listaCidades.get(index).getLongitude(), listaCidades.get(i).getLatitude(), listaCidades.get(i).getLongitude(), "K");
+				if(distanciaCalculada > distancia) {
+					distancia = distanciaCalculada;
+					cidadesMaisDistantes = new CidadesMaisDistantes(listaCidades.get(index), listaCidades.get(i), String.format("%.3f", distanciaCalculada));
+				}	
+			}
+		}
+		return cidadesMaisDistantes;
+	}
+	
+	private List<Estados> buscarQuantidadeDeCidadePorEstado(List<Cidades> lista){
+		Map<String, List<Cidades>> map = mapEstados(lista);
+		List<Estados> listaEstados = quantidadeDeCidadeporEstado(map);
+		return listaEstados;
+	}
+	
+	private List<Estados> estadoMaiorMenorNumeroCidades(List<Cidades> lista) {
+		Estados estadosMaiorNumeroCidades = new Estados();
+		Estados estadosMenorNumeroCidades = new Estados();
+		Map<String, List<Cidades>> map = mapEstados(lista);
+		List<Estados> listaEstados = new ArrayList<>();
+		estadosMaiorNumeroCidades = maiorNumeroDeCidades(map);
+		estadosMenorNumeroCidades = menorNumeroDeCidades(map);
+		listaEstados.add(estadosMaiorNumeroCidades);
+		listaEstados.add(estadosMenorNumeroCidades);
+		return listaEstados;
 	}
 	
 	private Map<String, List<Cidades>> mapEstados(List<Cidades> lista){

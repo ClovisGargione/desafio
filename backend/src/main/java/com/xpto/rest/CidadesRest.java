@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xpto.dto.Cidade;
+import com.xpto.dto.CidadesMaisDistantes;
+import com.xpto.dto.DadosColuna;
 import com.xpto.dto.Estados;
+import com.xpto.dto.TotalDeRegistros;
 import com.xpto.entity.Cidades;
 import com.xpto.service.CidadesService;
 
@@ -39,6 +42,10 @@ public class CidadesRest {
 		 return ResponseEntity.ok("teste");
 	}
 	
+	/**
+	 * Ler o arquivo csv para a base de dados
+	 * @return
+	 */
 	@GetMapping(path="/integracao")
 	public ResponseEntity<Object> migracaoParaBaseDeDados(){
 		try {
@@ -49,7 +56,10 @@ public class CidadesRest {
         }
 		
 	}
-	
+	 /**
+	  * Retornar somente as cidades que são capitais ordenadas pelo nome
+	  * @return
+	  */
 	@GetMapping(path="/lista-de-capitais")
 	public ResponseEntity<Object> listaDeCapitais(){
 		List<Cidades> capitais;
@@ -62,6 +72,10 @@ public class CidadesRest {
 		
 	}
 	
+	/**
+	 * Maior e menor estado e quantidade de cidades
+	 * @return
+	 */
 	@GetMapping(path="/maior-menor-estado")
 	public ResponseEntity<Object> estadoMaiorEMenor(){
 		try {
@@ -72,6 +86,10 @@ public class CidadesRest {
 		}
 	}
 	
+	/**
+	 * Quantidade de cidades por estado
+	 * @return
+	 */
 	@GetMapping(path="/quantidade-cidade-por-estado")
 	public ResponseEntity<Object> quantidadeCidadesPorEstado(){
 		try {
@@ -82,6 +100,11 @@ public class CidadesRest {
 		}
 	}
 	
+	/**
+	 * Retorna cidade pelo id do ibge
+	 * @param ibgeId
+	 * @return
+	 */
 	@GetMapping(path="/cidade/{ibgeId}")
 	public ResponseEntity<Object> buscarCidadePorIbgeId(@PathVariable("ibgeId")	Long ibgeId){
 		try {
@@ -94,8 +117,13 @@ public class CidadesRest {
 		}
 	}
 	
+	/**
+	 * Retorna cidades por estado
+	 * @param uf
+	 * @return
+	 */
 	@GetMapping(path="/estado/{uf}")
-	public ResponseEntity<Object> buscarCidadesPorIbgeId(@PathVariable("uf") String uf){
+	public ResponseEntity<Object> buscarCidadesPorUf(@PathVariable("uf") String uf){
 		try {
 			List<Cidade> cidades = cidadesService.buscarCidadesPorEstado(uf);
 			return ResponseEntity.ok(cidades);
@@ -106,6 +134,11 @@ public class CidadesRest {
 		}
 	}
 	
+	/**
+	 * Adiciona uma nova cidade
+	 * @param cidade
+	 * @return
+	 */
 	@PostMapping(path="/cidade/adicionar")
 	public ResponseEntity<Object> adicionarCidade(@RequestBody Cidades cidade){
 		try {
@@ -116,6 +149,11 @@ public class CidadesRest {
 		}
 	}
 	
+	/**
+	 * Remove uma cidade pelo ibgeId
+	 * @param ibgeId
+	 * @return
+	 */
 	@DeleteMapping(path="/cidade/remover/{ibgeId}")
 	public ResponseEntity<Object> removerCidade(@PathVariable("ibgeId")	Long ibgeId){
 		try {
@@ -123,6 +161,68 @@ public class CidadesRest {
 			return ResponseEntity.ok().build();
 		}catch(Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Serviço indiponível no momento.");
+		}
+	}
+	
+	/**
+	 * Retorna dados da coluna do csv que contenham a sequência de caracteres
+	 * @param coluna
+	 * @param caracteres
+	 * @return
+	 */
+	@GetMapping(path="/dados/{coluna}/{caracteres}")
+	public ResponseEntity<Object> dadosDaColunaPorString(@PathVariable("coluna") String coluna, @PathVariable("caracteres") String caracteres){
+		List<String> lista;
+		try {
+			lista = cidadesService.dadosDaColunaPorString(coluna, caracteres);
+			return ResponseEntity.ok(lista);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Retorna a quantidade de dados distintos baseado em uma coluna
+	 * @param coluna
+	 * @return
+	 */
+	@GetMapping(path="/quantidade-de-dados/coluna/{coluna}")
+	public ResponseEntity<Object> dadosDistintosPorColuna(@PathVariable("coluna") String coluna){
+		 Long resultado;
+		try {
+			resultado = cidadesService.quantidadeDeItensDistintosPorColuna(coluna);
+			return ResponseEntity.ok(new DadosColuna(coluna, resultado));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Retorna a quantidade total de registros
+	 * @return
+	 */
+	@GetMapping(path="/quantidade-total-de-registros")
+	public ResponseEntity<Object> quantidadetotalDeRegistros(){
+		 Long resultado;
+		try {
+			resultado = cidadesService.quantidadeTotalDeRegistros();
+			return ResponseEntity.ok(new TotalDeRegistros(resultado));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Retorna as cidades mais distantes e a distância em Km
+	 * @return
+	 */
+	@GetMapping(path="/cidades-mais-distantes")
+	public ResponseEntity<Object> cidadesMaisDistantes(){
+		try {
+			CidadesMaisDistantes cidadesMaisDistantes = cidadesService.calculaCidadesMaisDistantes();
+			return ResponseEntity.ok(cidadesMaisDistantes);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 
